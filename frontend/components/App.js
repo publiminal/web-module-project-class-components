@@ -26,7 +26,7 @@ export default class App extends React.Component {
     };
   
     addNewTodo = (todo) => {
-      const newTodo = {completed:false, id:Date.now(), name:todo}
+      const newTodo = {completed:false, id:Date.now().toString(), name:todo}
       this.setState({todos:[...this.state.todos, newTodo]}) 
     } 
 
@@ -36,9 +36,22 @@ export default class App extends React.Component {
       e.preventDefault();/* 
       console.log('formSubmit', e) */
       this.addNewTodo(this.state.newTodo)
-      /* this.setState({ newTodo: '' }) */
+      this.setState({ newTodo: '' })
     }
 
+
+
+
+    toggleTodo = todoId => {
+      this.setState({
+        todos:this.state.todos.map(todo => {
+          if(todo.id === todoId) {
+            return { ...todo , completed:!todo.completed}
+          }
+          return todo
+        })
+      })
+    }
 
 
     /* on first render calling external data */
@@ -52,7 +65,7 @@ export default class App extends React.Component {
     return (
       <div>
         {/* {!this.state.todos.length && <div>loading data...</div> } */}
-        <TodoList  todos={this.state.todos}  />
+        <TodoList  todos={this.state.todos} toggleTodo={this.toggleTodo} />
         <Form 
           handleSubmit={this.handleSubmit} 
           handleChanges={this.handleChanges}
