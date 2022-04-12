@@ -8,13 +8,17 @@ export default class App extends React.Component {
       super()
       this.state={
         todos:[],
-        newTodo:''
+        newTodo:'',
+        anyComplete:false
       }
+      this.controller = new AbortController(); // cancel axios call.
     }
-   
+
+    
     getTodos = () => {
-      axios.get('http://localhost:9000/api/todos')
-        .then(res => {
+      axios.get('http://localhost:9000/api/todos', {
+        signal: this.controller.signal
+     }).then(res => {
            /* console.log('data', res.data.data) */
            this.setState({todos:res.data.data} )
         }).catch(err => console.error(err))
@@ -30,17 +34,15 @@ export default class App extends React.Component {
       this.setState({todos:[...this.state.todos, newTodo]}) 
     } 
 
-    
+
     // class property to submit form
     handleSubmit = e => {
       e.preventDefault();/* 
       console.log('formSubmit', e) */
       this.addNewTodo(this.state.newTodo)
       this.setState({ newTodo: '' })
+      
     }
-
-
-
 
     toggleTodo = todoId => {
       this.setState({
@@ -51,12 +53,43 @@ export default class App extends React.Component {
           return todo
         })
       })
+
+      // this.checkAnyComplete()
     }
 
+    checkAnyComplete = () => {
+      const checkComplete = this.state.todos.filter(todo => todo.completed ) 
+      const isAnyComplete = checkComplete.length > 0
+      console.log('checkAnyComplete', checkComplete.length)
+      if(this.checkAnyComplete){
+        this.setState({anyComplete:isAnyComplete})
+      }
+      // console.log('checkAnyComplete', this.state.anyComplete)
+      /* return isAnyComplete */
+    }
+
+    doHideCompleted = () =>{
+      console.log('doHideComplete')
+      
+      // if(this.state.anyComplete){
+        this.setState({ todos: this.state.todos.filter(todo => !todo.completed )})
+      // }
+    }
 
     /* on first render calling external data */
     componentDidMount(){
       this.getTodos()
+      this.checkAnyComplete()
+    }
+
+    componentWillUnmount(){
+      this.controller.abort()
+    }
+
+    componentDidUpdate(){
+      console.log('checkAnyComplete after render', this.state.anyComplete)
+
+      // checkAnyComplete()
     }
   
   render() {
@@ -69,7 +102,8 @@ export default class App extends React.Component {
         <Form 
           handleSubmit={this.handleSubmit} 
           handleChanges={this.handleChanges}
-          newTodo={this.state.newTodo}    
+          newTodo={this.state.newTodo}
+          doHideCompleted={this.doHideCompleted}    
         />
       </div>
     )

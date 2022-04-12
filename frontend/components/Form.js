@@ -16,6 +16,8 @@ export default class Form extends React.Component {
               />
           </label>
           <button>Add new Todo</button>
+          <button onClick={() => this.props.doHideCompleted()} >Hide Completed</button>
+
         </form>
       </div>
     )

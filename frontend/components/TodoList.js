@@ -19,7 +19,7 @@ export default class TodoList extends React.Component {
               id={todo.id}  
               info={todo.name} 
               completed={todo.completed}
-              toggleTodo={this.props.toggleTodo}  
+              toggleTodo={this.props.toggleTodo}
             />
          ))}
       </div>
